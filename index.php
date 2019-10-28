@@ -134,7 +134,7 @@ echo "<br> 慢查询日志agent采集阀值是每10分钟/次，SQL执行时间�
 while ($row = mysqli_fetch_array($result)) {
     echo "<tr>";
     echo "<td width='100px' onclick=\"TestBlack('${row['0']}')\">✚  &nbsp;" . substr("{$row['1']}", 0, 50)
-    . "<div id='${row['0']}' style='display:none;'><a href='slowquery_explain.php?checksum={$row['0']}'>" . SqlFormatter::format($row['1']) . "</br></div></a></td>";
+    . "<div id='${row['0']}' style='display:none;'><a href='explain.php?checksum={$row['0']}'>" . SqlFormatter::format($row['1']) . "</br></div></a></td>";
     echo "<td>{$row['2']}</td>";
     echo "<td>{$row['3']}</td>";
     echo "<td>{$row['4']}</td>";
