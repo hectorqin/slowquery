@@ -105,18 +105,16 @@ if ($ip) {
     }
     ?>
     <h4 class="h4" style="margin-top: 30px;">Soar优化：</h4>
-    <iframe width="100%" id="soar-result" scrolling="no" οnlοad="changeFrameHeight()" frameborder="0" srcdoc="<?php echo htmlentities($soarResult);?>"></iframe>
+    <iframe width="100%" id="soar-result" scrolling="no" οnlοad="setIframeHeight(this)" frameborder="0" srcdoc="<?php echo htmlentities($soarResult);?>"></iframe>
     </div>
 </div>
 <script>
-function changeFrameHeight(){
-   var iframe = document.getElementById("soar-result"); 
-   iframe.height=document.documentElement.clientHeight;
+function setIframeHeight(iframe) {
+    if (iframe) {
+        var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+        iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+    }
 }
-
-window.οnresize=function(){  
-    changeFrameHeight();  
-} 
 </script>
 </body>
 </html>
