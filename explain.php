@@ -87,26 +87,37 @@ if ($ip) {
     <?php
         while ($row = mysqli_fetch_array($explainResult)) {
             echo '<tr>' .
-            '<td>' . $row['id'] . '</td>' .
-            '<td>' . $row['select_type'] . '</td>' .
-            '<td>' . $row['table'] . '</td>' .
-            '<td>' . $row['type'] . '</td>' .
-            '<td>' . $row['possible_keys'] . '</td>' .
-            '<td>' . $row['key'] . '</td>' .
-            '<td>' . $row['key_len'] . '</td>' .
-            '<td>' . $row['ref'] . '</td>' .
-            '<td>' . $row['rows'] . '</td>' .
-            '<td>' . $row['Extra'] . '</td>' .
-            '</tr></table></div>';
+                    '<td>' . $row['id'] . '</td>' .
+                    '<td>' . $row['select_type'] . '</td>' .
+                    '<td>' . $row['table'] . '</td>' .
+                    '<td>' . $row['type'] . '</td>' .
+                    '<td>' . $row['possible_keys'] . '</td>' .
+                    '<td>' . $row['key'] . '</td>' .
+                    '<td>' . $row['key_len'] . '</td>' .
+                    '<td>' . $row['ref'] . '</td>' .
+                    '<td>' . $row['rows'] . '</td>' .
+                    '<td>' . $row['Extra'] . '</td>' .
+                '</tr>';
         }
+        echo '</table></div>';
     } else {
         echo "<p>未配置数据库 ${sampleDbName} 的链接信息</p>";
     }
     ?>
     <h4 class="h4" style="margin-top: 30px;">Soar优化：</h4>
-    <iframe width="100%" border="0" srcdoc="<?php echo htmlentities($soarResult);?>"></iframe>
+    <iframe width="100%" id="soar-result" scrolling="no" οnlοad="changeFrameHeight()" frameborder="0" srcdoc="<?php echo htmlentities($soarResult);?>"></iframe>
     </div>
 </div>
+<script>
+function changeFrameHeight(){
+   var iframe = document.getElementById("soar-result"); 
+   iframe.height=document.documentElement.clientHeight;
+}
+
+window.οnresize=function(){  
+    changeFrameHeight();  
+} 
+</script>
 </body>
 </html>
 
