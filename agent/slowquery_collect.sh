@@ -17,7 +17,7 @@ MYSQL_USER="admin"
 MYSQL_PASSWORD="123456"
 
 # 生产MySQL主库慢查询目录和慢查询执行时间（单位秒）
-SLOWQUERY_DIR="/usr/local/mysql/mysql-slowlog/"
+SLOWQUERY_DIR="/usr/local/mysql/mysql-slowlog"
 SLOWQUERY_LONG_TIME=1
 
 # 生产环境 pt-query-digest 脚本地址
@@ -43,7 +43,7 @@ fi
 $PT_QUERY_DIGEST --user=$SLOWQUERY_DB_USER --password=$SLOWQUERY_DB_PASSWORD --port=$SLOWQUERY_DB_PORT --review h=$SLOWQUERY_DB_HOST,D=$SLOWQUERY_DB_DATABASE,t=$SLOWQUERY_DB_REVIEW_TABLE  --history h=$SLOWQUERY_DB_HOST,D=$SLOWQUERY_DB_DATABASE,t=$SLOWQUERY_DB_HISTORY_TABLE  --no-report --limit=100% --filter=" \$event->{add_column} = length(\$event->{arg}) and \$event->{serverid}=$MYSQL_SERVER_ID " $slowquery_file > /tmp/slowquery_analysis.log
 
 ##### set a new slow query log ###########
-new_slowquery_file=$SLOWQUERY_DIR/slowquery_$(date +%Y%m%d%H).log
+new_slowquery_file=$SLOWQUERY_DIR/slowquery_$(date +%Y%m%d%H%M).log
 
 #config mysql slowquery
 $MYSQL_CLIENT -h$MYSQL_HOST -P$MYSQL_PORT -u$MYSQL_USER -p$MYSQL_PASSWORD -e "set global slow_query_log = 1;set global long_query_time = $SLOWQUERY_LONG_TIME;set global slow_query_log_file = '$new_slowquery_file';"
