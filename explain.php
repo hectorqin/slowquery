@@ -99,7 +99,7 @@ $test_ip   = env('SOAR_TEST_DB_HOST');
 $test_port = env('SOAR_TEST_DB_PORT');
 $test_db   = env('SOAR_TEST_DB_DATABASE');
 
-$html_str = system("$sql_advisor_export | ./soar/soar -online-dsn='${user}:${pwd}@${ip}:${port}/${dbname}' -test-dsn='$test_user:$test_pwd@$test_ip:$test_port/$test_db' -report-type='html' -explain=true -log-output=./soar.log");
+$html_str = system("$sql_advisor_export | ./include/soar/soar -online-dsn='${user}:${pwd}@${ip}:${port}/${dbname}' -test-dsn='$test_user:$test_pwd@$test_ip:$test_port/$test_db' -report-type='html' -explain=true -log-output=./soar.log");
 echo $html_str;
 echo '<br><h3><a href="javascript:history.back(-1);">点击此处返回</a></h3></br>';
 
