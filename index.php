@@ -129,9 +129,9 @@ $pageStr .= "</ul>";
 <script language="javascript">
 function toggleDesc(id){
     var sqlPre = document.getElementById(id);
-    var desc = document.getElementById('desc-' + id);
+    // var desc = document.getElementById('desc-' + id);
     sqlPre.style.display = sqlPre.style.display=="block" ? "none" : "block";
-    desc.style.display = desc.style.display=="block" ? "none" : "block";
+    // desc.style.display = desc.style.display=="block" ? "none" : "block";
 }
 </script>
 </head>
