@@ -27,7 +27,9 @@ if ($ip) {
     $test_port = env('SOAR_TEST_DB_PORT');
     $test_db   = env('SOAR_TEST_DB_DATABASE');
 
-    $soarResult = system("echo '$sqlSample' | ./include/soar/soar -online-dsn='${user}:${pwd}@${ip}:${port}/${dbname}' -test-dsn='$test_user:$test_pwd@$test_ip:$test_port/$test_db' -report-type='html' -explain=true -log-output=./soar.log");
+    $soarOutput = [];
+    exec("echo '$sqlSample' | ./include/soar/soar -online-dsn='${user}:${pwd}@${ip}:${port}/${dbname}' -test-dsn='$test_user:$test_pwd@$test_ip:$test_port/$test_db' -report-type='html' -explain=true -log-output=./soar.log", $soarOutput);
+    $soarResult = implode("\n", $soarOutput);
 }
 
 ?>
