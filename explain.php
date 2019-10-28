@@ -86,29 +86,27 @@ if ($ip) {
                 </tr>
     <?php
         while ($row = mysqli_fetch_array($explainResult)) {
-            echo '<tr>';
-            echo '<td>' . $row['id'] . '</td>';
-            echo '<td>' . $row['select_type'] . '</td>';
-            echo '<td>' . $row['table'] . '</td>';
-            echo '<td>' . $row['type'] . '</td>';
-            echo '<td>' . $row['possible_keys'] . '</td>';
-            echo '<td>' . $row['key'] . '</td>';
-            echo '<td>' . $row['key_len'] . '</td>';
-            echo '<td>' . $row['ref'] . '</td>';
-            echo '<td>' . $row['rows'] . '</td>';
-            echo '<td>' . $row['Extra'] . '</td>';
-            echo '</tr></table></div>';
+            echo '<tr>' .
+            '<td>' . $row['id'] . '</td>' .
+            '<td>' . $row['select_type'] . '</td>' .
+            '<td>' . $row['table'] . '</td>' .
+            '<td>' . $row['type'] . '</td>' .
+            '<td>' . $row['possible_keys'] . '</td>' .
+            '<td>' . $row['key'] . '</td>' .
+            '<td>' . $row['key_len'] . '</td>' .
+            '<td>' . $row['ref'] . '</td>' .
+            '<td>' . $row['rows'] . '</td>' .
+            '<td>' . $row['Extra'] . '</td>' .
+            '</tr></table></div>';
         }
     } else {
         echo "<p>未配置数据库 ${sampleDbName} 的链接信息</p>";
     }
     ?>
+    <h4 class="h4" style="margin-top: 30px;">Soar优化：</h4>
+    <iframe width="100%" border="0" srcdoc="<?php echo htmlentities($soarResult);?>"></iframe>
     </div>
 </div>
-
-<?php
-echo $soarResult;
-?>
 </body>
 </html>
 
