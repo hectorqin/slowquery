@@ -41,6 +41,9 @@ if ($ip) {
     <title>慢查询日志</title>
     <link rel="stylesheet" href="statics/css/styles.css">
     <style>
+        .card {
+            margin-bottom: 0;
+        }
         .card-header {
             border-bottom: 1px solid #eee;
         }
@@ -105,16 +108,29 @@ if ($ip) {
     }
     ?>
     <h4 class="h4" style="margin-top: 30px;">Soar优化：</h4>
-    <iframe width="100%" id="soar-result" scrolling="no" οnlοad="setIframeHeight(this)" frameborder="0" srcdoc="<?php echo htmlentities($soarResult);?>"></iframe>
+    <iframe width="100%" id="soar-result" scrolling="no" οnlοad="setIframeHeight('soar-result')" frameborder="0" srcdoc="<?php echo htmlentities($soarResult);?>"></iframe>
     </div>
 </div>
 <script>
-function setIframeHeight(iframe) {
+function setIframeHeight(iframeId) {
+    var iframe = document.getElementById(iframeId);
+    var height = 0;
     if (iframe) {
         var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
-        iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+        height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+        iframe.height = height;
     }
+    return height;
 }
+var lastHeight = 0;
+var timerID = setInterval(function(){
+    var height = setIframeHeight('soar-result');
+    if (height == lastHeight) {
+        clearInterval(timerID);
+    } else {
+        lastHeight = height;
+    }
+}, 200);
 </script>
 </body>
 </html>

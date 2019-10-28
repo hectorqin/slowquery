@@ -102,6 +102,9 @@ $pageStr .= "</ul>";
     <title>慢查询日志</title>
     <link rel="stylesheet" href="statics/css/styles.css">
     <style>
+        .card {
+            margin-bottom: 0;
+        }
         .card-header {
             border-bottom: 1px solid #eee;
         }
