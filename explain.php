@@ -164,7 +164,7 @@ if ($ip) {
         }
         echo '</table></div>';
     } else {
-        echo "<br/><h4 class='h4'>未配置数据库 ${sampleDbName} 的链接信息，无法</h4>";
+        echo "<br/><h4 class='h4'>未配置数据库 ${sampleDbName} 的链接信息，无法获取优化建议</h4>";
     }
     ?>
     <?php if ($soarResult) { ?>
