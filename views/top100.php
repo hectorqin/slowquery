@@ -58,6 +58,7 @@ $slowQueryListResult = mysqli_query($con, $sql);
 </tr>
 <?php
 while ($row = mysqli_fetch_array($slowQueryListResult, MYSQLI_ASSOC)) {
+    $row['last_seen'] = fixTimeZone($row['last_seen']);
     echo "<tr>";
     echo "<td style='width:30%'>{$row['fingerprint']}</td>";
     echo "<td align='center'>{$row['db_max']}</td>";

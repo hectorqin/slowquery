@@ -73,3 +73,14 @@ if (!function_exists('page')) {
         return [$pageStr, ($currentPage - 1) * $pageSize . "," . $pageSize];
     }
 }
+
+if (!function_exists('fixTimeZone')) {
+    function fixTimeZone($date, $format="Y-m-d H:i:s")
+    {
+        static $timeZoneFix = null;
+        if (is_null($timeZoneFix)) {
+            $timeZoneFix = env('TIME_ZONE_FIX');
+        }
+        return date($format, strtotime($date) + $timeZoneFix * 3600);
+    }
+}

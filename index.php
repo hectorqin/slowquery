@@ -148,6 +148,7 @@ if ($selectDb) {
             </tr>
             <?php
             while ($row = mysqli_fetch_array($slowQueryListResult, MYSQLI_ASSOC)) {
+                $row['last_seen'] = fixTimeZone($row['last_seen']);
                 echo "<tr style='cursor: pointer;font-size: 14px;' onclick=\"toggleDesc('${row['checksum']}')\">";
                 echo "<td width='100px'>✚  " . substr("{$row['fingerprint']}", 0, 50)
                     . "</td>";

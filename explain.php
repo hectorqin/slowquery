@@ -104,6 +104,8 @@ if ($ip) {
             </tr>
             <?php
             while ($row = mysqli_fetch_array($slowQueryListResult, MYSQLI_ASSOC)) {
+                $row['ts_min'] = fixTimeZone($row['ts_min']);
+                $row['ts_max'] = fixTimeZone($row['ts_max']);
                 $sample = $row['sample'];
                 unset($row['sample']);
                 echo "<tr style='cursor: pointer;font-size: 14px;' onclick=\"toggleDesc('${row['checksum']}')\">";
