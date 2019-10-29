@@ -14,7 +14,7 @@ list($sqlSample, $sampleDbName) = mysqli_fetch_array($result);
 $slowQueryListResult       = mysqli_query($con, "SELECT *, ROUND(`Query_time_sum`/`ts_cnt`, 3) AS Query_time_avg,
 ROUND(`Lock_time_sum`/`ts_cnt`, 3) AS Lock_time_avg,
 ROUND(`Rows_examined_sum`/`ts_cnt`, 3) AS Rows_examined_avg,
-ROUND(`Rows_sent_sum`/`ts_cnt`,3) AS Rows_sent_avg FROM `${historyTable}` WHERE `checksum`='${checksum}' LIMIT 5");
+ROUND(`Rows_sent_sum`/`ts_cnt`,3) AS Rows_sent_avg FROM `${historyTable}` WHERE `checksum`='${checksum}' ORDER BY `id` DESC LIMIT 5");
 
 $result                                = mysqli_query($con, "SELECT `ip`,`dbname`,`user`,`pwd`,`port` FROM `${dbListTable}` WHERE `dbname`='${sampleDbName}'");
 list($ip, $dbname, $user, $pwd, $port) = mysqli_fetch_array($result);
