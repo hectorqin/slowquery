@@ -99,8 +99,8 @@ $slowQueryListResult = mysqli_query($con, $sql);
             <select class="form-control" id="db-select" name="db" data-val="<?php echo $selectDb; ?>">
                 <option value="">选择你的数据库</option>
                 <?php
-                while ($row = mysqli_fetch_array($dbListResult)) {
-                    echo "<option value='" . $row[0] . "'>" . $row[1] . "</option>";
+                while ($row = mysqli_fetch_array($dbListResult, MYSQLI_ASSOC)) {
+                    echo "<option value='" . $row['dbname'] . "'>" . $row['label'] . "</option>";
                 }
                 ?>
             </select>

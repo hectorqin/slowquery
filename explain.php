@@ -22,7 +22,7 @@ list($ip, $dbname, $user, $pwd, $port) = mysqli_fetch_array($result);
 $explainResult = false;
 $soarResult    = '';
 if ($ip) {
-    $explainConnection = mysqli_connect("$ip", "$user", "$pwd", "$dbname", $port) or die("数据库${user}@${ip}:${port}/${dbname}链接错误" . mysqli_connect_error());
+    $explainConnection = mysqli_connect($ip, $user, $pwd, $dbname, $port) or die("数据库${user}@${ip}:${port}/${dbname}链接错误" . mysqli_connect_error());
     mysqli_query($explainConnection, "SET names utf8");
     $explainResult = mysqli_query($explainConnection, "EXPLAIN $sqlSample");
 
@@ -145,7 +145,7 @@ if ($ip) {
                     <th>Extra</th>
                 </tr>
     <?php
-        while ($row = mysqli_fetch_array($explainResult)) {
+        while ($row = mysqli_fetch_array($explainResult, MYSQLI_ASSOC)) {
             echo '<tr>' .
                     '<td>' . $row['id'] . '</td>' .
                     '<td>' . $row['select_type'] . '</td>' .
