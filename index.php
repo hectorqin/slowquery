@@ -22,8 +22,9 @@ $dbListResult = mysqli_query($con, "SELECT dbname,label FROM ${dbListTable} orde
 $condition   = $daysSince ? "last_seen >= SUBDATE(NOW(),INTERVAL $daysSince DAY)" : '';
 $countResult = mysqli_query($con, "select count(*) from ${reviewTable} " . ($condition ? "WHERE ${condition}" : '')); //获得记录总数
 $count       = mysqli_fetch_array($countResult);
+$pageSize    = isset($_GET['pageSize']) ? $_GET['pageSize'] : env('PAGE_SIZE', 10);
 
-list($pageStr, $limit) = page($count[0], 50, ['daysSince' => $daysSince, 'db' => $selectDb]);
+list($pageStr, $limit) = page($count[0], $pageSize, ['daysSince' => $daysSince, 'db' => $selectDb]);
 
 if (!empty($selectDb)) {
     $condition = $condition ? "AND r.${condition}" : "";
@@ -83,7 +84,9 @@ $slowQueryListResult = mysqli_query($con, $sql);
             padding: 15px;
         }
         .desc-td pre {
+            max-width: calc(100vw - 2rem - 50px);
             padding: 10px;
+            background: #fff;
             margin-bottom: 0 !important;
         }
     </style>
@@ -105,6 +108,7 @@ $slowQueryListResult = mysqli_query($con, $sql);
                 ?>
             </select>
             <input type="hidden" name="daysSince" value="<?php echo $daysSince; ?>"/>
+            <input type="hidden" name="pageSize" value="<?php echo $pageSize; ?>"/>
             <input type="submit" class="btn btn-primary" style="margin-left: 10px"/>
         </form>
 
@@ -120,11 +124,14 @@ if ($selectDb) {
         <form class="form-inline" action="" method="get">
             <label for="daysSince-select">慢日志记录查看范围： </label>
             <select class="form-control" id="daysSince-select" name="daysSince" data-val="<?php echo $daysSince; ?>">
+                <option value="1">最近1天</option>
                 <option value="7">最近7天</option>
                 <option value="15">最近15天</option>
                 <option value="30">最近30天</option>
                 <option value="0">全部</option>
             </select>
+            <label for="pageSize-input" style="margin-left: 10px">分页大小： </label>
+            <input class="form-control" type="number" id="pageSize-input" name="pageSize" style="width: 85px;text-align: center;" value="<?php echo $pageSize; ?>"/>
             <input type="hidden" name="db" value="<?php echo $selectDb; ?>"/>
             <input type="submit" class="btn btn-primary" style="margin-left: 10px"/>
         </form>
@@ -150,7 +157,7 @@ if ($selectDb) {
             while ($row = mysqli_fetch_array($slowQueryListResult, MYSQLI_ASSOC)) {
                 $row['last_seen'] = fixTimeZone($row['last_seen']);
                 echo "<tr style='cursor: pointer;font-size: 14px;' onclick=\"toggleDesc('${row['checksum']}')\">";
-                echo "<td width='100px'>✚  " . substr("{$row['fingerprint']}", 0, 50)
+                echo "<td width='100px'><span id='toggle-{$row['checksum']}'>►</span>  " . substr("{$row['fingerprint']}", 0, 50)
                     . "</td>";
                 echo "<td>{$row['db_max']}</td>";
                 echo "<td>{$row['user_max']}</td>";
@@ -180,7 +187,9 @@ if ($selectDb) {
     document.getElementById('daysSince-select').value = document.getElementById('daysSince-select').getAttribute('data-val');
     function toggleDesc(id){
         var sqlPre = document.getElementById(id);
+        var toggle = document.getElementById('toggle-' + id);
         sqlPre.style.display = sqlPre.style.display=="block" ? "none" : "block";
+        toggle.innerText = toggle.innerText == '▼' ? '►' : '▼';
     }
 </script>
 </body>

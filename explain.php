@@ -63,6 +63,7 @@ if ($ip) {
             padding: 0 !important;
         }
         .desc-td pre {
+            max-width: 60vw;
             padding: 10px;
             background: #fff;
             margin-bottom: 0 !important;
@@ -109,7 +110,7 @@ if ($ip) {
                 $sample = $row['sample'];
                 unset($row['sample']);
                 echo "<tr style='cursor: pointer;font-size: 14px;' onclick=\"toggleDesc('${row['checksum']}')\">";
-                echo "<td width='100px'>✚  " . substr("{$sample}", 0, 50)
+                echo "<td width='100px'><span id='toggle-{$row['checksum']}'>►</span>  " . substr("{$sample}", 0, 50)
                     . "</td>";
                 echo "<td>{$row['db_max']}</td>";
                 echo "<td>{$row['user_max']}</td>";
@@ -195,8 +196,10 @@ var timerID = setInterval(function(){
 function toggleDesc(id){
     var sqlPre = document.getElementById(id);
     var descPre = document.getElementById('desc-' + id);
+    var toggle = document.getElementById('toggle-' + id);
     sqlPre.style.display = sqlPre.style.display=="block" ? "none" : "block";
     descPre.style.display = descPre.style.display=="block" ? "none" : "block";
+    toggle.innerText = toggle.innerText == '▼' ? '►' : '▼';
 }
 </script>
 </body>

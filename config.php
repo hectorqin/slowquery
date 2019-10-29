@@ -24,7 +24,7 @@ if (!function_exists('db')) {
 }
 
 if (!function_exists('page')) {
-    function page($totalCount, $pageSize = 10, $params = [], $pageName='page')
+    function page($totalCount, $pageSize, $params = [], $pageName='page')
     {
         $totalPage   = ceil($totalCount / $pageSize); //计算出总页数
         $maxPageCount = 10;
