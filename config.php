@@ -22,3 +22,54 @@ if (!function_exists('db')) {
         return $connection;
     }
 }
+
+if (!function_exists('page')) {
+    function page($totalCount, $pageSize = 10, $params = [], $pageName='page')
+    {
+        $totalPage   = ceil($totalCount / $pageSize); //计算出总页数
+        $maxPageCount = 10;
+        $buffCount    = 2;
+        $startPage    = 1;
+
+        if ($totalPage < $maxPageCount) {
+            $maxPageCount = $totalPage;
+        }
+
+        $currentPage = isset($_GET[$pageName]) ? $_GET[$pageName] : (isset($_POST[$pageName]) ? $_POST[$pageName] : 1);
+        $params = empty($params) ? (!empty($_POST) ? $_POST : $_GET) : $params;
+        if ($currentPage < $buffCount) {
+            $startPage = 1;
+        } else if ($currentPage >= $buffCount and $currentPage < $totalPage - $maxPageCount) {
+            $startPage = $currentPage - $buffCount + 1;
+        } else {
+            $startPage = $totalPage - $maxPageCount + 1;
+        }
+
+        $endPage = $startPage + $maxPageCount - 1;
+
+        $pageStr = "";
+
+        $pageLink = $_SERVER['PHP_SELF'];
+        $pageLink .= empty($params) ? "?${pageName}" : ('?' . http_build_query($params) . "&${pageName}");
+
+        $pageStr .= "<ul class='pagination'>";
+        if ($currentPage > 1) {
+            $pageStr .= "<li class='page-item'> <a class='page-link' href='${pageLink}=1" . "'>第一页</a></li>";
+            $pageStr .= "<li class='page-item'> <a class='page-link' href='${pageLink}=" . ($currentPage - 1) . "'>上一页</a></li>";
+        }
+
+        $pageStr .= "<li class='page-item'><span class='page-link disabled'>总共${totalPage}页</span></li>";
+
+        for ($i = $startPage; $i <= $endPage; $i++) {
+            $pageStr .= "<li class='page-item'><a class='page-link' href='${pageLink}=" . $i . "'>" . $i . "</a></li>";
+        }
+
+        if ($currentPage < $totalPage) {
+            $pageStr .= "<li class='page-item'><a class='page-link' href='${pageLink}=" . ($currentPage + 1) . "'>下一页</a></li>";
+            $pageStr .= "<li class='page-item'><a class='page-link' href='${pageLink}=" . $totalPage . "'>最后页</a></li>";
+        }
+
+        $pageStr .= "</ul>";
+        return [$pageStr, ($currentPage - 1) * $pageSize . "," . $pageSize];
+    }
+}

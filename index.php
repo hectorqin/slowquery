@@ -19,79 +19,40 @@ $daysSince = isset($_GET['daysSince']) ? $_GET['daysSince'] : 30;
 
 $dbListResult = mysqli_query($con, "SELECT dbname,label FROM ${dbListTable} order by dbname ASC");
 
-$perNumber   = 50; //每页显示的记录数
 $condition   = $daysSince ? "last_seen >= SUBDATE(NOW(),INTERVAL $daysSince DAY)" : '';
-$page        = isset($_GET['page']) ? $_GET['page'] : 1; //获得当前的页面值
-$count       = mysqli_query($con, "select count(*) from ${reviewTable} " . ($condition ? "WHERE ${condition}" : '')); //获得记录总数
-$rs          = mysqli_fetch_array($count);
-$totalNumber = $rs[0];
-$totalPage   = ceil($totalNumber / $perNumber); //计算出总页数
+$countResult = mysqli_query($con, "select count(*) from ${reviewTable} " . ($condition ? "WHERE ${condition}" : '')); //获得记录总数
+$count       = mysqli_fetch_array($countResult);
 
-$startCount = ($page - 1) * $perNumber; //分页开始,根据此方法计算出开始的记录
+list($pageStr, $limit) = page($count[0], 50, ['daysSince' => $daysSince, 'db' => $selectDb]);
 
 if (!empty($selectDb)) {
     $condition = $condition ? "AND r.${condition}" : "";
-    $sql       = "SELECT r.checksum,r.fingerprint,h.db_max,h.user_max,r.last_seen,SUM(h.ts_cnt) AS ts_cnt,
-ROUND(MIN(h.Query_time_min),3) AS Query_time_min,ROUND(MAX(h.Query_time_max),3) AS Query_time_max,
-ROUND(SUM(h.Query_time_sum)/SUM(h.ts_cnt),3) AS Query_time_avg,r.sample
+    $sql       = "SELECT r.checksum,r.fingerprint,h.db_max,h.user_max,r.last_seen,r.sample,SUM(h.ts_cnt) AS ts_cnt,
+    ROUND(SUM(h.Query_time_sum)/SUM(h.ts_cnt),3) AS Query_time_avg,ROUND(MAX(h.Query_time_max),3) AS Query_time_max,
+    ROUND(SUM(h.Lock_time_sum)/SUM(h.ts_cnt),3) AS Lock_time_avg,ROUND(MAX(h.Lock_time_max),3) AS Lock_time_max,
+    ROUND(SUM(h.Rows_examined_sum)/SUM(h.ts_cnt),3) AS Rows_examined_avg,ROUND(MAX(h.Rows_examined_max),3) AS Rows_examined_max,
+    ROUND(SUM(h.Rows_sent_sum)/SUM(h.ts_cnt),3) AS Rows_sent_avg,ROUND(MAX(h.Rows_sent_max),3) AS Rows_sent_max
 FROM ${reviewTable} AS r JOIN ${historyTable} AS h
 ON r.checksum=h.checksum
 WHERE h.db_max = '${selectDb}'
 ${condition}
 GROUP BY r.checksum
-ORDER BY r.last_seen DESC,ts_cnt DESC LIMIT $startCount,$perNumber";
+ORDER BY r.last_seen DESC,ts_cnt DESC LIMIT $limit";
 } else {
     $condition = $condition ? "AND r.${condition}" : "";
-    $sql       = "SELECT r.checksum,r.fingerprint,h.db_max,h.user_max,r.last_seen,SUM(h.ts_cnt) AS ts_cnt,
-ROUND(MIN(h.Query_time_min),3) AS Query_time_min,ROUND(MAX(h.Query_time_max),3) AS Query_time_max,
-ROUND(SUM(h.Query_time_sum)/SUM(h.ts_cnt),3) AS Query_time_avg,r.sample
+    $sql       = "SELECT r.checksum,r.fingerprint,h.db_max,h.user_max,r.last_seen,r.sample,SUM(h.ts_cnt) AS ts_cnt,
+    ROUND(SUM(h.Query_time_sum)/SUM(h.ts_cnt),3) AS Query_time_avg,ROUND(MAX(h.Query_time_max),3) AS Query_time_max,
+    ROUND(SUM(h.Lock_time_sum)/SUM(h.ts_cnt),3) AS Lock_time_avg,ROUND(MAX(h.Lock_time_max),3) AS Lock_time_max,
+    ROUND(SUM(h.Rows_examined_sum)/SUM(h.ts_cnt),3) AS Rows_examined_avg,ROUND(MAX(h.Rows_examined_max),3) AS Rows_examined_max,
+    ROUND(SUM(h.Rows_sent_sum)/SUM(h.ts_cnt),3) AS Rows_sent_avg,ROUND(MAX(h.Rows_sent_max),3) AS Rows_sent_max
 FROM ${reviewTable} AS r JOIN ${historyTable} AS h
 ON r.checksum=h.checksum
 ${condition}
 GROUP BY r.checksum
-ORDER BY r.last_seen DESC,ts_cnt DESC LIMIT $startCount,$perNumber";
+ORDER BY r.last_seen DESC,ts_cnt DESC LIMIT $limit";
 }
 
 $slowQueryListResult = mysqli_query($con, $sql);
-
-$maxPageCount = 10;
-$buffCount    = 2;
-$startPage    = 1;
-
-if ($totalPage < $maxPageCount) {
-    $maxPageCount = $totalPage;
-}
-
-if ($page < $buffCount) {
-    $startPage = 1;
-} else if ($page >= $buffCount and $page < $totalPage - $maxPageCount) {
-    $startPage = $page - $buffCount + 1;
-} else {
-    $startPage = $totalPage - $maxPageCount + 1;
-}
-
-$endPage = $startPage + $maxPageCount - 1;
-
-$pageStr = "";
-
-$pageStr .= "<ul class='pagination'>";
-if ($page > 1) {
-    $pageStr .= "<li class='page-item'> <a class='page-link' href='index.php?db=${selectDb}&daysSince=${daysSince}&page=" . "1" . "'>第一页</a></li>";
-    $pageStr .= "<li class='page-item'> <a class='page-link' href='index.php?db=${selectDb}&daysSince=${daysSince}&page=" . ($page - 1) . "'>上一页</a></li>";
-}
-
-$pageStr .= "<li class='page-item'><span class='page-link disabled'>总共${totalPage}页</span></li>";
-
-for ($i = $startPage; $i <= $endPage; $i++) {
-    $pageStr .= "<li class='page-item'><a class='page-link' href='index.php?db=${selectDb}&daysSince=${daysSince}&page=" . $i . "'>" . $i . "</a></li>";
-}
-
-if ($page < $totalPage) {
-    $pageStr .= "<li class='page-item'><a class='page-link' href='index.php?db=${selectDb}&daysSince=${daysSince}&page=" . ($page + 1) . "'>下一页</a></li>";
-    $pageStr .= "<li class='page-item'><a class='page-link' href='index.php?db=${selectDb}&daysSince=${daysSince}&page=" . $totalPage . "'>最后页</a></li>";
-}
-
-$pageStr .= "</ul>";
 ?>
 
 <html>
@@ -126,14 +87,6 @@ $pageStr .= "</ul>";
             margin-bottom: 0 !important;
         }
     </style>
-<script language="javascript">
-function toggleDesc(id){
-    var sqlPre = document.getElementById(id);
-    // var desc = document.getElementById('desc-' + id);
-    sqlPre.style.display = sqlPre.style.display=="block" ? "none" : "block";
-    // desc.style.display = desc.style.display=="block" ? "none" : "block";
-}
-</script>
 </head>
 <body>
 <div class="card">
@@ -178,31 +131,40 @@ if ($selectDb) {
 
         <div class="table-responsive">
             <table class="table table-hover table-striped">
-            <tr>
+            <tr style="font-size: 14px">
             <th>抽象语句</th>
             <th>数据库</th>
             <th>用户名</th>
             <th>最近时间</th>
             <th>次数</th>
             <th>平均时间(秒)</th>
-            <th>最小时间(秒)</th>
             <th>最大时间(秒)</th>
+            <th>平均锁等待时间(秒)</th>
+            <th>最大锁等待时间(秒)</th>
+            <th>平均扫描行</th>
+            <th>最大扫描行</th>
+            <th>平均返回行</th>
+            <th>最大返回行</th>
             </tr>
             <?php
-            while ($row = mysqli_fetch_array($slowQueryListResult)) {
-                echo "<tr style='cursor: pointer;' onclick=\"toggleDesc('${row['0']}')\">";
-                echo "<td width='100px'>✚  " . substr("{$row['1']}", 0, 50)
+            while ($row = mysqli_fetch_array($slowQueryListResult, MYSQLI_ASSOC)) {
+                echo "<tr style='cursor: pointer;font-size: 14px;' onclick=\"toggleDesc('${row['checksum']}')\">";
+                echo "<td width='100px'>✚  " . substr("{$row['fingerprint']}", 0, 50)
                     . "</td>";
-                echo "<td>{$row['2']}</td>";
-                echo "<td>{$row['3']}</td>";
-                echo "<td>{$row['4']}</td>";
-                echo "<td>{$row['5']}</td>";
-                echo "<td>{$row['8']}</td>";
-                echo "<td>{$row['6']}</td>";
-                echo "<td>{$row['7']}</td>";
+                echo "<td>{$row['db_max']}</td>";
+                echo "<td>{$row['user_max']}</td>";
+                echo "<td>{$row['last_seen']}</td>";
+                echo "<td>{$row['ts_cnt']}</td>";
+                echo "<td>{$row['Query_time_avg']}</td>";
+                echo "<td>{$row['Query_time_max']}</td>";
+                echo "<td>{$row['Lock_time_avg']}</td>";
+                echo "<td>{$row['Lock_time_max']}</td>";
+                echo "<td>{$row['Rows_examined_avg']}</td>";
+                echo "<td>{$row['Rows_examined_max']}</td>";
+                echo "<td>{$row['Rows_sent_avg']}</td>";
+                echo "<td>{$row['Rows_sent_max']}</td>";
                 echo "</tr>";
-                echo "<tr><td colspan='8' class='desc-td'><a id='${row['0']}' style='display:none;' href='explain.php?checksum={$row['0']}'>" . SqlFormatter::format($row['1']) . "</a></td></tr>";
-                // <td colspan='4' style='padding: 0'><pre id='desc-${row['0']}' style='display:none;'>" . json_encode($row, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) . "</pre></td>
+                echo "<tr><td colspan='13' class='desc-td'><a id='${row['checksum']}' style='display:none;' href='explain.php?checksum={$row['checksum']}'>" . SqlFormatter::format($row['sample']) . "</a></td></tr>";
             }
             ?>
             </table>
@@ -213,8 +175,12 @@ if ($selectDb) {
 <?php echo $pageStr; ?>
 
 <script>
-    document.getElementById('db-select').value = document.getElementById('db-select').getAttribute('data-val')
-    document.getElementById('daysSince-select').value = document.getElementById('daysSince-select').getAttribute('data-val')
+    document.getElementById('db-select').value = document.getElementById('db-select').getAttribute('data-val');
+    document.getElementById('daysSince-select').value = document.getElementById('daysSince-select').getAttribute('data-val');
+    function toggleDesc(id){
+        var sqlPre = document.getElementById(id);
+        sqlPre.style.display = sqlPre.style.display=="block" ? "none" : "block";
+    }
 </script>
 </body>
 </html>
