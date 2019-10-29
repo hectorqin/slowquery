@@ -40,7 +40,7 @@ then
 fi
 
 #collect mysql slowquery log into slowquery database
-$PT_QUERY_DIGEST --user=$SLOWQUERY_DB_USER --password=$SLOWQUERY_DB_PASSWORD --port=$SLOWQUERY_DB_PORT --review h=$SLOWQUERY_DB_HOST,D=$SLOWQUERY_DB_DATABASE,t=$SLOWQUERY_DB_REVIEW_TABLE  --history h=$SLOWQUERY_DB_HOST,D=$SLOWQUERY_DB_DATABASE,t=$SLOWQUERY_DB_HISTORY_TABLE  --no-report --limit=100% --filter=" \$event->{add_column} = length(\$event->{arg}) and \$event->{serverid}=$MYSQL_SERVER_ID " $slowquery_file > /tmp/slowquery_analysis.log
+$PT_QUERY_DIGEST --charset=utf8 --user=$SLOWQUERY_DB_USER --password=$SLOWQUERY_DB_PASSWORD --port=$SLOWQUERY_DB_PORT --review h=$SLOWQUERY_DB_HOST,D=$SLOWQUERY_DB_DATABASE,t=$SLOWQUERY_DB_REVIEW_TABLE  --history h=$SLOWQUERY_DB_HOST,D=$SLOWQUERY_DB_DATABASE,t=$SLOWQUERY_DB_HISTORY_TABLE  --no-report --limit=100% --filter=" \$event->{add_column} = length(\$event->{arg}) and \$event->{serverid}=$MYSQL_SERVER_ID " $slowquery_file > /tmp/slowquery_analysis.log
 
 ##### set a new slow query log ###########
 new_slowquery_file=$SLOWQUERY_DIR/slowquery_$(date +%Y%m%d%H%M).log
