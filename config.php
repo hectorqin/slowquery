@@ -61,7 +61,11 @@ if (!function_exists('page')) {
         $pageStr .= "<li class='page-item'><span class='page-link disabled'>总共${totalPage}页</span></li>";
 
         for ($i = $startPage; $i <= $endPage; $i++) {
-            $pageStr .= "<li class='page-item'><a class='page-link' href='${pageLink}=" . $i . "'>" . $i . "</a></li>";
+            if ($i == $currentPage) {
+                $pageStr .= "<li class='page-item active'><a class='page-link' href='javascript:;'>" . $i . "</a></li>";
+            } else {
+                $pageStr .= "<li class='page-item'><a class='page-link' href='${pageLink}=" . $i . "'>" . $i . "</a></li>";
+            }
         }
 
         if ($currentPage < $totalPage) {
