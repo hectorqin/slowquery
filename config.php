@@ -37,9 +37,9 @@ if (!function_exists('page')) {
 
         $currentPage = isset($_GET[$pageName]) ? $_GET[$pageName] : (isset($_POST[$pageName]) ? $_POST[$pageName] : 1);
         $params = empty($params) ? (!empty($_POST) ? $_POST : $_GET) : $params;
-        if ($currentPage < $buffCount) {
+        if ($currentPage <= $buffCount) {
             $startPage = 1;
-        } else if ($currentPage >= $buffCount and $currentPage < $totalPage - $maxPageCount) {
+        } else if ($currentPage > $buffCount && $currentPage < $totalPage - $maxPageCount + $buffCount) {
             $startPage = $currentPage - $buffCount + 1;
         } else {
             $startPage = $totalPage - $maxPageCount + 1;
