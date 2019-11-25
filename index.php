@@ -54,6 +54,9 @@ ORDER BY r.last_seen DESC,ts_cnt DESC LIMIT $limit";
 }
 
 $slowQueryListResult = mysqli_query($con, $sql);
+if (!$slowQueryListResult) {
+    die("数据库查询错误 " . mysqli_error($con));
+}
 ?>
 
 <html>
